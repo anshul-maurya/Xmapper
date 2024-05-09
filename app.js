@@ -104,10 +104,15 @@ function assignTextToClause(text, clauseId, color) {
 function exportToExcel() {
   const wb = XLSX.utils.book_new();
   const ws_name = "Clause Assignments";
-  let data = [["Text", "Clause ID"]];
+  let data = [["Clause ID", "Clause Description", "Relevant Text", "Color"]];
+
   assignments.forEach((item) => {
-    data.push([item.text, item.clauseId]);
+    const description = document.querySelector(
+      `#clauseForm input[value="${item.clauseId}"]`
+    ).previousElementSibling.previousElementSibling.value;
+    data.push([item.clauseId, description, item.text, item.color]);
   });
+
   const ws = XLSX.utils.aoa_to_sheet(data);
   XLSX.utils.book_append_sheet(wb, ws, ws_name);
   XLSX.writeFile(wb, "clause_assignments.xlsx");
