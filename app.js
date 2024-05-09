@@ -15,28 +15,54 @@ function generateClauseInputs() {
   }
 }
 
-function displayPDF(file) {
+const mammoth = require("mammoth");
+
+function displayFile(file) {
   const fileReader = new FileReader();
   fileReader.onload = function () {
     const typedArray = new Uint8Array(this.result);
-    pdfjsLib.getDocument(typedArray).promise.then((pdf) => {
-      const maxPages = pdf.numPages;
-      const pageTextPromises = [];
-      for (let pageNo = 1; pageNo <= maxPages; pageNo++) {
-        pageTextPromises.push(
-          pdf.getPage(pageNo).then((page) => {
-            return page.getTextContent().then((textContent) => {
-              return textContent.items.map((token) => token.str).join(" ");
-            });
-          })
-        );
-      }
-      Promise.all(pageTextPromises).then((pagesText) => {
-        document.getElementById("textContent").innerText = pagesText.join("\n");
-      });
-    });
+    if (file.type === "application/pdf") {
+      displayPDF(typedArray);
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      displayDOCX(typedArray);
+    } else {
+      alert("File type not supported.");
+    }
   };
   fileReader.readAsArrayBuffer(file);
+}
+
+function displayPDF(fileData) {
+  pdfjsLib.getDocument(fileData).promise.then((pdf) => {
+    const maxPages = pdf.numPages;
+    const pageTextPromises = [];
+    for (let pageNo = 1; pageNo <= maxPages; pageNo++) {
+      pageTextPromises.push(
+        pdf.getPage(pageNo).then((page) => {
+          return page.getTextContent().then((textContent) => {
+            return textContent.items.map((token) => token.str).join(" ");
+          });
+        })
+      );
+    }
+    Promise.all(pageTextPromises).then((pagesText) => {
+      document.getElementById("textContent").innerText = pagesText.join("\n");
+    });
+  });
+}
+
+function displayDOCX(fileData) {
+  mammoth
+    .extractRawText({ arrayBuffer: fileData })
+    .then((result) => {
+      document.getElementById("textContent").innerText = result.value;
+    })
+    .catch((err) => {
+      console.error("Error extracting text from DOCX:", err);
+    });
 }
 
 function extractText() {
@@ -46,11 +72,7 @@ function extractText() {
     return;
   }
   const file = fileInput.files[0];
-  if (file.type === "application/pdf") {
-    displayPDF(file);
-  } else {
-    alert("File type not supported.");
-  }
+  displayFile(file);
 }
 
 function handleTextSelect(event) {
