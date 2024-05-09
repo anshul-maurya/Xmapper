@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Patent Document Analyzer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Input Panel for Clauses -->
+      <div class="input-panel">
+        <input
+          type="number"
+          id="numClauses"
+          placeholder="Enter number of clauses"
+        />
+        <button onclick="generateClauseInputs()">Set Clauses</button>
+        <form id="clauseForm">
+          <!-- Clause inputs will be generated here -->
+        </form>
+      </div>
+
+      <!-- Document Upload and Display -->
+      <div class="doc-panel">
+        <input type="file" id="fileInput" accept=".pdf, .docx" />
+        <button onclick="extractText()">Upload and Extract Text</button>
+        <div id="textContent" contenteditable="true"></div>
+        <button onclick="exportToExcel()" class="export-button">
+          Export to Excel
+        </button>
+        <!-- Export Button -->
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
