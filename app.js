@@ -88,8 +88,20 @@ function handleTextSelect(event) {
 }
 
 function assignTextToClause(text, clauseId, color) {
-  assignments.push({ text: text, clauseId: clauseId, color: color }); // Store color along with text and clauseId
-  console.log(`Text: "${text}" assigned to ${clauseId}`); // Validate that data is being captured
+  // Check if the highlighted text is already assigned to the same clause
+  const existingAssignmentIndex = assignments.findIndex(
+    (item) => item.clauseId === clauseId
+  );
+
+  if (existingAssignmentIndex !== -1) {
+    // If the assignment already exists, update the text
+    assignments[existingAssignmentIndex].text += " " + text;
+    console.log(`Text: "${text}" added to ${clauseId}`); // Log the addition
+  } else {
+    // Otherwise, create a new assignment
+    assignments.push({ text: text, clauseId: clauseId, color: color });
+    console.log(`Text: "${text}" assigned to ${clauseId}`);
+  }
 
   // Highlight the selected text with the respective color
   const selection = window.getSelection();
